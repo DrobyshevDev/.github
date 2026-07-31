@@ -2,8 +2,6 @@
 
 **Сайт:** [https://DrobyshevDev.github.io/drobyshevdev-demo/](https://DrobyshevDev.github.io/drobyshevdev-demo/)
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Деплой-blue?style=flat-square&logo=githubpages)](https://DrobyshevDev.github.io/drobyshevdev-demo/)
-
 **Frameworks and tooling for machine learning, LLM agents, and operational
 decision systems.**
 
