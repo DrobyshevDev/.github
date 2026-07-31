@@ -1,9 +1,7 @@
 # DrobyshevDev
 
-**Site:** [https://DrobyshevDev.github.io/drobyshevdev-demo/](https://DrobyshevDev.github.io/drobyshevdev-demo/)
-
-**Frameworks and tooling for machine learning, LLM agents, and operational
-decision systems.**
+**Frameworks, products and tooling for machine learning, LLM agents, and
+operational decision systems.**
 
 We build the layer between a research result and something a team can run: the
 project structure, the tracking, the interface, and the tests that keep a number
@@ -13,6 +11,25 @@ and tested in CI on Linux, macOS and Windows.
 ---
 
 ## Projects
+
+### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
+
+Answers a question about Russian law and returns the specific articles it rests
+on, with every citation verified. Retrieval is hybrid — lexical plus dense search
+with a cross-encoder reranker — and an NLI model checks that each cited norm
+actually supports the claim, so a plausible-but-wrong reference is caught rather
+than shipped. The default answer is extractive, the text of the law itself, and
+cannot hallucinate; an optional LLM layer passes the same check.
+
+Six Russian codes (~12,700 provisions), a cross-reference graph between articles,
+and judicial-practice links from Supreme Court Plenum rulings. Retrieval quality
+is pinned by an eval on a golden set, tracked run over run.
+
+```bash
+docker compose up app        # → http://localhost:8077, no keys required
+```
+
+`Python` · FastAPI · [releases](https://github.com/DrobyshevDev/praxis/releases) · Apache-2.0
 
 ### [mlango](https://github.com/DrobyshevDev/mlango) · a framework for ML, analytics and LLM agents
 
