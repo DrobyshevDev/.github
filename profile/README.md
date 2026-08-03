@@ -18,6 +18,7 @@ and tested in CI on Linux, macOS and Windows.
 |---|---|---|
 | [**praxis**](https://github.com/DrobyshevDev/praxis) | A legal assistant whose citations are checked, not asserted | `docker compose up app` |
 | [**mlango**](https://github.com/DrobyshevDev/mlango) | A framework for ML, analytics and LLM agents | `pip install "mlango[sklearn]"` |
+| [**glia**](https://github.com/DrobyshevDev/glia) | A glass-box, minimal library for building LLM agents | `pip install glia-agents` |
 | [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
@@ -60,6 +61,26 @@ for LLMs; most teams are doing both.
 
 `Python 3.10+` · [documentation](https://drobyshevdev.github.io/mlango/) ·
 [PyPI](https://pypi.org/project/mlango/) · MIT
+
+### [glia](https://github.com/DrobyshevDev/glia) · a glass-box, minimal library for LLM agents
+
+Every model call, tool call and state transition is a plain object you can log,
+snapshot and replay. No hidden control flow; the whole loop fits in one file you
+can read in an afternoon.
+
+```bash
+pip install glia-agents
+```
+
+The crowded agent-framework field has one consistent complaint: too much
+abstraction, hidden control flow, painful to debug. glia is the opposite bet. It
+ships the modern techniques — tools, structured outputs, context compaction,
+durable checkpoints, guardrails, subagents, evals-as-tests — as opt-in primitives
+you can read, not a monolith you must trust. If you want a graph engine, use
+LangGraph. If you want a small, transparent loop you fully understand, use this.
+
+`Python 3.10+` · zero required dependencies · [documentation](https://drobyshevdev.github.io/glia/) ·
+[PyPI](https://pypi.org/project/glia-agents/) · MIT
 
 ### [decisionrl](https://github.com/DrobyshevDev/decisionrl) · reinforcement learning for operational decisions
 
