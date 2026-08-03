@@ -108,10 +108,13 @@ should be possible to find the line where it happens.
 
 ## Contributing
 
-Issues and pull requests are welcome on any project. Each repository has a
-`CONTRIBUTING.md` with the setup, the checks CI will run, and the layering rules
-review will hold you to. Security reports go through GitHub's private
-vulnerability reporting rather than a public issue.
+Issues and pull requests are welcome on any project. Every repository has a
+`CONTRIBUTING.md` — its own, or the
+[organisation-wide default](https://github.com/DrobyshevDev/.github/blob/master/CONTRIBUTING.md) —
+with the checks CI will run and the standards review will hold you to. Security
+reports go through GitHub's [private vulnerability
+reporting](https://github.com/DrobyshevDev/.github/blob/master/SECURITY.md)
+rather than a public issue.
 
 Documentation is written in English and Russian, structured so a third language
 is one file per page rather than a fork.
