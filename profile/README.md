@@ -20,6 +20,7 @@ and tested in CI on Linux, macOS and Windows.
 | [**mlango**](https://github.com/DrobyshevDev/mlango) | A framework for ML, analytics and LLM agents | `pip install "mlango[sklearn]"` |
 | [**glia**](https://github.com/DrobyshevDev/glia) | A glass-box, minimal library for building LLM agents | `pip install glia-agents` |
 | [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
+| [**sextant**](https://github.com/DrobyshevDev/sextant) | A course on ML, neural networks, RL and recommenders — from zero to reading and reproducing research | [читать](https://drobyshevdev.github.io/sextant/) |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
 
@@ -101,6 +102,22 @@ README says so and shows the learned policy matching it.
 
 `Python 3.9+` · [documentation](https://drobyshevdev.github.io/decisionrl/) ·
 [PyPI](https://pypi.org/project/decisionrl/) · MIT
+
+### [sextant](https://github.com/DrobyshevDev/sextant) · a course on the same principles
+
+Machine learning, neural networks, reinforcement learning and recommender
+systems, from zero to reading and reproducing research. The central skill is
+checking a claim rather than launching a training run: the field moves through
+papers, most of the improvements they announce do not survive a change of random
+seed or a comparison against a tuned baseline, and someone who can train a model
+but cannot check a claim builds on noise.
+
+Written in Russian, twenty-seven modules, with the notebooks running on a CPU in
+seconds. Module 1 is about baselines and confidence intervals, before any machine
+learning at all.
+
+[**drobyshevdev.github.io/sextant**](https://drobyshevdev.github.io/sextant/) ·
+prose CC BY 4.0 · code MIT
 
 ---
 
