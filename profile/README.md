@@ -8,9 +8,17 @@ project structure, the tracking, the interface, and the tests that keep a number
 honest six months after it was measured. Everything here is open source, typed,
 and tested in CI on Linux, macOS and Windows.
 
+[**drobyshevdev.github.io**](https://drobyshevdev.github.io/) · [Русская версия](https://drobyshevdev.github.io/ru/)
+
 ---
 
 ## Projects
+
+| | What it is | Install |
+|---|---|---|
+| [**praxis**](https://github.com/DrobyshevDev/praxis) | A legal assistant whose citations are checked, not asserted | `docker compose up app` |
+| [**mlango**](https://github.com/DrobyshevDev/mlango) | A framework for ML, analytics and LLM agents | `pip install "mlango[sklearn]"` |
+| [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
 
@@ -21,15 +29,18 @@ actually supports the claim, so a plausible-but-wrong reference is caught rather
 than shipped. The default answer is extractive, the text of the law itself, and
 cannot hallucinate; an optional LLM layer passes the same check.
 
-Six Russian codes (~12,700 provisions), a cross-reference graph between articles,
-and judicial-practice links from Supreme Court Plenum rulings. Retrieval quality
-is pinned by an eval on a golden set, tracked run over run.
+The full Civil Code ships in the repository — 1,712 articles, 4,717 provisions —
+together with a cross-reference graph between articles and a parser for the
+official text at pravo.gov.ru, which is how the remaining codes are added.
+Judicial practice is the next pipeline rather than something already shipped.
+Retrieval quality is pinned by an eval on a golden set: recall@5 0.92, MRR 0.94
+on the full corpus, tracked run over run.
 
 ```bash
 docker compose up app        # → http://localhost:8077, no keys required
 ```
 
-`Python` · FastAPI · [releases](https://github.com/DrobyshevDev/praxis/releases) · Apache-2.0
+`Python 3.12` · FastAPI · Postgres + pgvector · [releases](https://github.com/DrobyshevDev/praxis/releases) · Apache-2.0
 
 ### [mlango](https://github.com/DrobyshevDev/mlango) · a framework for ML, analytics and LLM agents
 
@@ -47,17 +58,28 @@ Agents are a first-class family beside models, sharing one metastore, one admin
 and one evaluation system. Most tools in this space are for classical ML *or*
 for LLMs; most teams are doing both.
 
-`Python` · [documentation](https://drobyshevdev.github.io/mlango/) ·
+`Python 3.10+` · [documentation](https://drobyshevdev.github.io/mlango/) ·
 [PyPI](https://pypi.org/project/mlango/) · MIT
 
 ### [decisionrl](https://github.com/DrobyshevDev/decisionrl) · reinforcement learning for operational decisions
 
 Pricing, inventory, energy, queues and supply chains: the decisions a business
 makes thousands of times a day, where a small policy improvement compounds.
-Thirty-one algorithms, typed and tested, aimed at problems that have a cost
-function rather than a leaderboard.
+Thirty-one algorithms and twenty-two environments — nine of them applied — typed
+and tested, aimed at problems that have a cost function rather than a
+leaderboard.
 
-`Python` · MIT
+```bash
+pip install decisionrl
+```
+
+Every applied environment ships with the classical operations-research baseline
+beside it, so a learned policy is measured against the standard method rather
+than asserted to be better. Where the classical method is already optimal, the
+README says so and shows the learned policy matching it.
+
+`Python 3.9+` · [documentation](https://drobyshevdev.github.io/decisionrl/) ·
+[PyPI](https://pypi.org/project/decisionrl/) · MIT
 
 ---
 
