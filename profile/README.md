@@ -20,7 +20,7 @@ and tested in CI on Linux, macOS and Windows.
 | [**mlango**](https://github.com/DrobyshevDev/mlango) | A framework for ML, analytics and LLM agents | `pip install "mlango[sklearn]"` |
 | [**glia**](https://github.com/DrobyshevDev/glia) | A glass-box, minimal library for building LLM agents | `pip install glia-agents` |
 | [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
-| [**sextant**](https://github.com/DrobyshevDev/sextant) | A free course: the whole road into ML, DL and RL, from zero to reading and reproducing research | [начать](https://drobyshevdev.github.io/sextant/) |
+| [**lemma**](https://github.com/DrobyshevDev/lemma) | A free course: the whole road into ML, DL and RL, from zero to reading and reproducing research | [начать](https://drobyshevdev.github.io/lemma/) |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
 
@@ -103,7 +103,7 @@ README says so and shows the learned policy matching it.
 `Python 3.9+` · [documentation](https://drobyshevdev.github.io/decisionrl/) ·
 [PyPI](https://pypi.org/project/decisionrl/) · MIT
 
-### [sextant](https://github.com/DrobyshevDev/sextant) · the whole road into ML, DL and RL, free
+### [lemma](https://github.com/DrobyshevDev/lemma) · the whole road into ML, DL and RL, free
 
 A complete roadmap through machine learning, neural networks, reinforcement
 learning and recommender systems: twenty-seven modules from the arithmetic of a
@@ -120,7 +120,7 @@ Written in Russian; the notebooks run on a CPU in seconds and are executed in CI
 on Linux and Windows, because a reader whose notebook does not start has no
 course.
 
-[**drobyshevdev.github.io/sextant**](https://drobyshevdev.github.io/sextant/) ·
+[**drobyshevdev.github.io/lemma**](https://drobyshevdev.github.io/lemma/) ·
 prose CC BY 4.0 · code MIT
 
 ---
