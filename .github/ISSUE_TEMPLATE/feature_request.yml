@@ -1,0 +1,52 @@
+name: Feature request
+description: Something the library cannot do that it arguably should.
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The use case matters more than the API you have in mind. Describe the
+        problem first — the shape of the solution is the easy part to argue about
+        and the expensive part to get wrong.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >
+        What are you trying to do, and where does the library stop you? Include
+        the workaround you are using now, if any — it is usually the clearest
+        statement of what is missing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+      description: >
+        Optional. A sketch of the API or behaviour. Rough is fine; this is a
+        starting point for the discussion, not a specification.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: >
+        Including "another library already does this well" — that is a useful
+        answer and sometimes the right one.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This does not require a new mandatory dependency in the core.
+          required: false
+        - label: I am willing to open a pull request for it.
+          required: false
