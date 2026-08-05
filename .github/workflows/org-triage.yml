@@ -1,0 +1,87 @@
+name: Weekly maintenance triage
+
+# Monday morning, after Dependabot has opened that week's pull requests. Every
+# repository in the organisation configures Dependabot for `interval: weekly,
+# day: monday`, which GitHub runs early UTC — 07:00 leaves it time to finish.
+#
+# The report lands in one long-lived issue whose body is rewritten each week, so
+# there is one place to look rather than a growing pile. A comment is added only
+# when something actually needs a decision, so a notification means something.
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  triage:
+    name: Collect and report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # Standard library and the gh CLI, which is preinstalled on the runner.
+      # No dependencies means nothing here to keep updated.
+      - name: Run the triage
+        id: triage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # The script exits 2 when something needs a decision, which is not a
+          # failure, so the step cannot abort on a non-zero status.
+          set +e
+          python scripts/org_triage.py > report.md
+          STATUS=$?
+          set -e
+
+          cat report.md
+
+          if [ "$STATUS" -eq 1 ]; then
+            echo "::error::The triage could not read the organisation."
+            exit 1
+          fi
+
+          if [ "$STATUS" -eq 2 ]; then
+            echo "urgent=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "urgent=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish the report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URGENT: ${{ steps.triage.outputs.urgent }}
+          REPO: ${{ github.repository }}
+        run: |
+          TITLE="Maintenance triage"
+
+          # One issue, rewritten. Searching by title rather than storing an id
+          # keeps this stateless: delete the issue and the next run opens a new
+          # one instead of failing.
+          NUMBER=$(gh issue list --repo "$REPO" --state open --label maintenance \
+            --search "$TITLE in:title" --json number,title \
+            --jq "map(select(.title == \"$TITLE\")) | .[0].number // empty")
+
+          if [ -z "$NUMBER" ]; then
+            gh issue create --repo "$REPO" --title "$TITLE" \
+              --label maintenance --body-file report.md
+            echo "opened the triage issue"
+            exit 0
+          fi
+
+          gh issue edit "$NUMBER" --repo "$REPO" --body-file report.md
+          echo "updated issue #$NUMBER"
+
+          # Editing a body notifies nobody, which is the point on a quiet week.
+          # A comment does notify, so it is reserved for the weeks that earn it.
+          if [ "$URGENT" = "true" ]; then
+            gh issue comment "$NUMBER" --repo "$REPO" \
+              --body "Something needs a decision this week — see the issue body, section **Needs you this week**."
+          fi
