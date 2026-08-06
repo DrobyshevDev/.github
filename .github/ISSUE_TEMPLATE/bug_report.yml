@@ -1,0 +1,53 @@
+name: Bug report
+description: Something behaves differently from what the documentation promises.
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The reproduction matters more than the diagnosis. A short script that
+        fails is worth more than a paragraph about what you think is wrong.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you observed, and what you expected instead.
+      placeholder: |
+        Expected: ...
+        Got: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: >
+        The smallest thing that fails. Paste a runnable snippet or a sequence of
+        commands rather than describing them — a reader who can run it finds the
+        cause far faster than one who has to reconstruct it.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >
+        Package version, Python version, operating system. `pip show <package>`
+        and `python -V` cover it.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Traceback
+      description: The full traceback, if there is one. Not just the last line.
+      render: shell
+    validations:
+      required: false

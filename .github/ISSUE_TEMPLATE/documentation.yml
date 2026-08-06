@@ -1,0 +1,38 @@
+name: Documentation problem
+description: The docs are wrong, missing, or out of step between English and Russian.
+labels: ["documentation"]
+
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: URL or file path.
+      placeholder: docs/getting-started.md, or the published page
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+      description: >
+        Wrong, missing, or stale — say which. If the code and the documentation
+        disagree, say which one you believe and why.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Which language
+      description: >
+        Documentation here is written in English and Russian. A page that is
+        correct in one and stale in the other is a real bug, not a nitpick.
+      multiple: true
+      options:
+        - English
+        - Russian
+        - Both
+    validations:
+      required: true

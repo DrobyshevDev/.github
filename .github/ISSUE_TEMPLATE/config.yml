@@ -1,0 +1,14 @@
+# Blank issues stay on. A report that fits none of the forms below is still
+# worth having, and a contributor who has to fight a form usually writes less.
+blank_issues_enabled: true
+
+# No Discussions link: Discussions are not enabled anywhere in this
+# organisation, and a contact link that 404s costs more than it saves. Add one
+# here the day a repository turns them on.
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/DrobyshevDev/.github/security/policy
+    about: Do not open a public issue. Report it privately instead.
+  - name: How to contribute
+    url: https://github.com/DrobyshevDev/.github/blob/master/CONTRIBUTING.md
+    about: What review will hold a pull request to, before you write one.
