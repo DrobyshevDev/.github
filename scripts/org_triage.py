@@ -129,11 +129,24 @@ def collect(repo: str, branch: str) -> dict:
                 }
             )
 
+    # Completed runs only, and the aggregate `CI` workflow by preference.
+    #
+    # Both filters are corrections to a report that cried wolf on its first run.
+    # `gh run list` gives an in-flight run an empty conclusion rather than null,
+    # which read as "not success" and put every still-running workflow under
+    # "needs you" — including this triage reporting its own run, which would
+    # have happened every week forever. And taking whatever ran last picked up
+    # GitHub's own `pages-build-deployment` on the site repository rather than
+    # its CI.
     runs = gh(
-        "run", "list", "--repo", full, "--branch", branch, "--limit", "1",
+        "run", "list", "--repo", full, "--branch", branch,
+        "--status", "completed", "--limit", "20",
         "--json", "conclusion,displayTitle,url,workflowName",
-    )
-    if runs:
+    ) or []
+    aggregate = [run for run in runs if run.get("workflowName") == "CI"]
+    if aggregate:
+        report["ci"] = aggregate[0]
+    elif runs:
         report["ci"] = runs[0]
 
     return report
@@ -169,7 +182,9 @@ def render(reports: list[dict]) -> tuple[str, bool]:
                 interesting = True
 
         ci = report["ci"]
-        if ci and ci.get("conclusion") not in (None, "success", "skipped"):
+        # The empty string is what an unfinished run reports. Only a run that
+        # finished, and finished badly, belongs here.
+        if ci and ci.get("conclusion") not in ("", None, "success", "skipped"):
             urgent.append(
                 f"[{repo}]({ci['url']}) — {ci['workflowName']} is "
                 f"{ci['conclusion']} on the default branch."
