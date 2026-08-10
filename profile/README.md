@@ -31,9 +31,12 @@ actually supports the claim, so a plausible-but-wrong reference is caught rather
 than shipped. The default answer is extractive, the text of the law itself, and
 cannot hallucinate; an optional LLM layer passes the same check.
 
-The full Civil Code ships in the repository — 1,712 articles, 4,717 provisions —
-together with a cross-reference graph between articles and a parser for the
-official text at pravo.gov.ru, which is how the remaining codes are added.
+Six codes ship in the repository — civil, tax, labour, criminal, housing and
+administrative offences, the civil one running to 1,712 articles and 4,717
+provisions — together with a cross-reference graph between articles. The texts
+are transcriptions from Wikisource, marked in the corpus as pending a check
+against the official publication at pravo.gov.ru; the parser for that source is
+how an edition gets confirmed rather than how a code gets added.
 Judicial practice is the next pipeline rather than something already shipped.
 Retrieval quality is pinned by an eval on a golden set: recall@5 0.92, MRR 0.94
 on the full corpus, tracked run over run.
