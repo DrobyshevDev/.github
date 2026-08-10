@@ -20,6 +20,7 @@ and tested in CI on Linux, macOS and Windows.
 | [**mlango**](https://github.com/DrobyshevDev/mlango) | A framework for ML, analytics and LLM agents | `pip install "mlango[sklearn]"` |
 | [**glia**](https://github.com/DrobyshevDev/glia) | A glass-box, minimal library for building LLM agents | `pip install glia-agents` |
 | [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
+| [**stadion**](https://github.com/DrobyshevDev/stadion) | A proving ground where an agent is scored against the exact optimum | `pip install stadion-rl` |
 | [**lemma**](https://github.com/DrobyshevDev/lemma) | A free course: the whole road into ML, DL and RL, from zero to reading and reproducing research | [начать](https://drobyshevdev.github.io/lemma/) |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
@@ -105,6 +106,33 @@ README says so and shows the learned policy matching it.
 
 `Python 3.9+` · [documentation](https://drobyshevdev.github.io/decisionrl/) ·
 [PyPI](https://pypi.org/project/decisionrl/) · MIT
+
+### [stadion](https://github.com/DrobyshevDev/stadion) · an agent scored against the exact optimum
+
+Six operational decisions — stock, price, admission to a queue, a battery, two
+echelons of a supply chain, and pricing and ordering taken together — each with
+two reference arms beside the agent under test: the classical operations-research
+method, tuned on seeds held out of the evaluation, and the exact optimum from
+backward induction.
+
+```bash
+pip install stadion-rl
+```
+
+The score is normalised between those two and carries a bootstrap interval over
+paired instances, so "no measurable difference from the classical method" is a
+verdict the report can return rather than a rounding error it has to hide. The
+room a task leaves runs from 0.4% on inventory, where the newsvendor formula is
+already near-optimal, to 26.6% on the battery. That spread is the point: a
+benchmark whose tasks all leave generous headroom has selected for problems where
+the textbook answer is bad.
+
+Every other number here is measured *against* the optimum, so no ordinary run
+would notice a wrong recurrence. `stadion verify` computes each dynamic program's
+value and, separately, simulates the policy that same program emits; the two have
+to agree within Monte Carlo error, and CI runs it on every push.
+
+`Python 3.10+` · [PyPI](https://pypi.org/project/stadion-rl/) · MIT
 
 ### [lemma](https://github.com/DrobyshevDev/lemma) · the whole road into ML, DL and RL, free
 
