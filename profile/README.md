@@ -10,6 +10,8 @@ and tested in CI on Linux, macOS and Windows.
 
 [**drobyshevdev.github.io**](https://drobyshevdev.github.io/) · [Русская версия](https://drobyshevdev.github.io/ru/)
 
+Created and maintained by [**Denis Drobyshev**](https://github.com/DenisDrobyshev) — backend & ML engineer ([portfolio](https://denisdrobyshev.github.io/portfolio/)).
+
 ---
 
 ## Projects
