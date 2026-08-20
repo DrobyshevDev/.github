@@ -165,3 +165,11 @@ rather than a public issue.
 
 Documentation is written in English and Russian, structured so a third language
 is one file per page rather than a fork.
+
+---
+
+## Maintainers
+
+The organisation is maintained by [**Denis Drobyshev**](https://github.com/DenisDrobyshev).
+The [people page](https://github.com/orgs/DrobyshevDev/people) lists members who have
+made their membership public.
