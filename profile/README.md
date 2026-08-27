@@ -47,7 +47,8 @@ on the full corpus, tracked run over run.
 docker compose up app        # → http://localhost:8077, no keys required
 ```
 
-`Python 3.12` · FastAPI · Postgres + pgvector · [releases](https://github.com/DrobyshevDev/praxis/releases) · Apache-2.0
+`Python 3.12` · FastAPI · Docker · [documentation](https://drobyshevdev.github.io/praxis/) ·
+[releases](https://github.com/DrobyshevDev/praxis/releases) · Apache-2.0
 
 ### [mlango](https://github.com/DrobyshevDev/mlango) · a framework for ML, analytics and LLM agents
 
