@@ -33,8 +33,9 @@ REPOS = {
     "praxis": "master",
     "glia": "master",
     "decisionrl": "main",
+    "stadion": "main",
     "lemma": "main",
-    "dokimos": "master",
+    "research": "main",
     "DrobyshevDev.github.io": "main",
     ".github": "master",
 }
