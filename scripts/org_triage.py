@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import subprocess
 import sys
 
@@ -64,6 +65,28 @@ def gh(*args: str) -> object | None:
         return None
 
 
+def gh_text(*args: str) -> str | None:
+    """Run a gh command and return its output as text. None means it failed.
+
+    gh() parses JSON, which is right for every other call here and wrong for a
+    workflow file. Reading one through gh() silently produced None, so the first
+    version of the pin check reported every repository as fully pinned -- a
+    security check that answers "all clear" when it cannot read anything is
+    worse than no check.
+    """
+    try:
+        out = subprocess.run(
+            ["gh", *args],
+            capture_output=True,
+            text=True,
+            check=True,
+            encoding="utf-8",
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+    return out or None
+
+
 def age_days(timestamp: str) -> int:
     stamp = dt.datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
     return (NOW - stamp).days
@@ -72,7 +95,10 @@ def age_days(timestamp: str) -> int:
 def collect(repo: str, branch: str) -> dict:
     """Everything worth knowing about one repository, or a note that it is unread."""
     full = f"{ORG}/{repo}"
-    report: dict = {"repo": repo, "unread": False, "pulls": [], "stale_issues": [], "ci": None}
+    report: dict = {
+        "repo": repo, "unread": False, "pulls": [], "stale_issues": [],
+        "ci": None, "unpinned": [],
+    }
 
     pulls = gh(
         "pr", "list", "--repo", full, "--state", "open", "--limit", "50",
@@ -150,7 +176,45 @@ def collect(repo: str, branch: str) -> dict:
     elif runs:
         report["ci"] = runs[0]
 
+    report["unpinned"] = unpinned_actions(full)
+
     return report
+
+
+def unpinned_actions(full: str) -> list[str]:
+    """Actions still referenced by a tag or a branch rather than by a commit.
+
+    A tag is a label its owner can move, and these workflows run with a token
+    that can write to the repository. Pinning happened once, by hand; this is
+    what notices the next workflow added with `@v4` on it. Local actions
+    (`./.github/...`) and reusable workflows in this organisation are skipped --
+    those move only when somebody here moves them.
+    """
+    # No --jq here: it prints one name per line, which is not JSON, so gh()
+    # discards it and the check silently sees an empty directory.
+    listing = gh("api", f"repos/{full}/contents/.github/workflows")
+    names = [
+        entry.get("name")
+        for entry in (listing if isinstance(listing, list) else [])
+        if isinstance(entry, dict)
+    ]
+    loose: list[str] = []
+    for name in names:
+        if not str(name).endswith((".yml", ".yaml")):
+            continue
+        body = gh_text(
+            "api", f"repos/{full}/contents/.github/workflows/{name}",
+            "-H", "Accept: application/vnd.github.raw",
+        )
+        if not body:
+            continue
+        for match in re.finditer(r"uses:\s*([^\s#]+)", body):
+            ref = match.group(1)
+            if ref.startswith(("./", f"{ORG}/")) or "@" not in ref:
+                continue
+            if not re.fullmatch(r"[0-9a-f]{40}", ref.split("@", 1)[1]):
+                loose.append(f"{name}: {ref}")
+    return loose
 
 
 def render(reports: list[dict]) -> tuple[str, bool]:
@@ -189,6 +253,14 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             urgent.append(
                 f"[{repo}]({ci['url']}) — {ci['workflowName']} is "
                 f"{ci['conclusion']} on the default branch."
+            )
+            interesting = True
+
+        if report["unpinned"]:
+            count = len(report["unpinned"])
+            drifting.append(
+                f"{repo} — {count} action{'s' if count != 1 else ''} still on a moving tag: "
+                + ", ".join(sorted({line.split(': ', 1)[1] for line in report["unpinned"]}))
             )
             interesting = True
 
