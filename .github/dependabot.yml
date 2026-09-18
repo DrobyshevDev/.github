@@ -1,0 +1,17 @@
+version: 2
+
+# This repository had no Dependabot configuration while it carried no workflows.
+# It carries three now -- the weekly triage, the social-card check, and whatever
+# comes next -- and the actions in them are pinned to commits, which is only
+# maintainable if something raises them.
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
