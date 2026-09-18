@@ -181,7 +181,22 @@ def collect(repo: str, branch: str) -> dict:
     return report
 
 
-def unpinned_actions(full: str) -> list[str]:
+def _retry(call, expected: type, attempts: int = 3):
+    """Call something up to `attempts` times, returning the first result of `expected`.
+
+    The API drops a request now and then. Reporting that as "could not read"
+    every time would make a truthful check into weekly noise, and silently
+    treating it as "nothing found" is what this function exists to prevent, so
+    the middle answer is to ask again before giving up.
+    """
+    for _ in range(attempts):
+        result = call()
+        if isinstance(result, expected):
+            return result
+    return None
+
+
+def unpinned_actions(full: str) -> list[str] | None:
     """Actions still referenced by a tag or a branch rather than by a commit.
 
     A tag is a label its owner can move, and these workflows run with a token
@@ -189,25 +204,33 @@ def unpinned_actions(full: str) -> list[str]:
     what notices the next workflow added with `@v4` on it. Local actions
     (`./.github/...`) and reusable workflows in this organisation are skipped --
     those move only when somebody here moves them.
+
+    Returns None when the workflows could not be read, and never an empty list
+    in that case. The distinction is the whole point: the first version returned
+    [] on a failed request, so a single timed-out call reported a repository with
+    twenty-one loose references as fully pinned. That is this file's own stated
+    rule -- a repository that could not be read is unread, never quiet -- broken
+    by the check added to enforce another one.
     """
-    # No --jq here: it prints one name per line, which is not JSON, so gh()
-    # discards it and the check silently sees an empty directory.
-    listing = gh("api", f"repos/{full}/contents/.github/workflows")
+    listing = _retry(lambda: gh("api", f"repos/{full}/contents/.github/workflows"), list)
+    if listing is None:
+        return None
     names = [
         entry.get("name")
-        for entry in (listing if isinstance(listing, list) else [])
-        if isinstance(entry, dict)
+        for entry in listing
+        if isinstance(entry, dict) and str(entry.get("name", "")).endswith((".yml", ".yaml"))
     ]
     loose: list[str] = []
     for name in names:
-        if not str(name).endswith((".yml", ".yaml")):
-            continue
-        body = gh_text(
-            "api", f"repos/{full}/contents/.github/workflows/{name}",
-            "-H", "Accept: application/vnd.github.raw",
+        body = _retry(
+            lambda name=name: gh_text(
+                "api", f"repos/{full}/contents/.github/workflows/{name}",
+                "-H", "Accept: application/vnd.github.raw",
+            ),
+            str,
         )
-        if not body:
-            continue
+        if body is None:
+            return None
         for match in re.finditer(r"uses:\s*([^\s#]+)", body):
             ref = match.group(1)
             if ref.startswith(("./", f"{ORG}/")) or "@" not in ref:
@@ -256,11 +279,18 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             )
             interesting = True
 
-        if report["unpinned"]:
-            count = len(report["unpinned"])
+        unpinned = report["unpinned"]
+        if unpinned is None:
+            drifting.append(
+                f"{repo} — could not read the workflows, so whether its actions are "
+                "pinned is unknown rather than fine."
+            )
+            interesting = True
+        elif unpinned:
+            count = len(unpinned)
             drifting.append(
                 f"{repo} — {count} action{'s' if count != 1 else ''} still on a moving tag: "
-                + ", ".join(sorted({line.split(': ', 1)[1] for line in report["unpinned"]}))
+                + ", ".join(sorted({line.split(': ', 1)[1] for line in unpinned}))
             )
             interesting = True
 
