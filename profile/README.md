@@ -40,8 +40,10 @@ are transcriptions from Wikisource, marked in the corpus as pending a check
 against the official publication at pravo.gov.ru; the parser for that source is
 how an edition gets confirmed rather than how a code gets added.
 Judicial practice is the next pipeline rather than something already shipped.
-Retrieval quality is pinned by an eval on a golden set: recall@5 0.92, MRR 0.94
-on the full corpus, tracked run over run.
+Retrieval quality is measured by an eval on an eighteen-question golden set. The
+offline figures are pinned by a test that re-runs it; recall@5 0.92 and MRR 0.94
+on the full corpus are measured on a GPU that CI does not have, and are stated
+here as measurements rather than as guarantees.
 
 ```bash
 docker compose up app        # → http://localhost:8077, no keys required
@@ -93,7 +95,7 @@ LangGraph. If you want a small, transparent loop you fully understand, use this.
 
 Pricing, inventory, energy, queues and supply chains: the decisions a business
 makes thousands of times a day, where a small policy improvement compounds.
-Thirty-one algorithms and twenty-two environments — nine of them applied — typed
+Thirty-two algorithms and twenty-four environments — nine of them applied — typed
 and tested, aimed at problems that have a cost function rather than a
 leaderboard.
 
