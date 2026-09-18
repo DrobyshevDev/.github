@@ -1,0 +1,28 @@
+name: Social cards
+
+# A repository added to the generator without a card rendered, or a card
+# rendered at the wrong size, is invisible until someone shares a link and gets
+# a letterboxed image back. This is the cheap check that catches it.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cards:
+    name: Every repository has a card
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # Pillow only reads the files here; rendering needs fonts this runner
+      # does not have, which is why --check verifies presence and size rather
+      # than bytes.
+      - run: pip install "pillow>=10"
+      - run: python scripts/make_social_card.py --check
