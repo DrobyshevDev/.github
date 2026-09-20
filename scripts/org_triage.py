@@ -243,6 +243,7 @@ def unpinned_actions(full: str) -> list[str] | None:
 def render(reports: list[dict]) -> tuple[str, bool]:
     """The report, and whether anything in it needs a decision."""
     urgent: list[str] = []
+    ready: list[str] = []
     waiting: list[str] = []
     quiet: list[str] = []
     drifting: list[str] = []
@@ -265,8 +266,23 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             elif pull["bot"]:
                 waiting.append(f"{line} — {pull['age']}d, checks {pull['checks']}")
                 interesting = True
+            elif pull["checks"] == "green" and not pull["draft"]:
+                # Green, not a draft, author is not a bot: everything that can be
+                # automated has happened and the only thing left is somebody
+                # deciding. That is the question this report asks, so it belongs
+                # here rather than waiting for STALE_DAYS.
+                #
+                # It was not here before, and decisionrl#31 is why: green on every
+                # leg including the forty-minute learning job, open twenty-four
+                # days, and this report called the repository quiet -- because red
+                # checks were the only thing that counted as needing you, and
+                # thirty days the only thing that counted as old.
+                ready.append(
+                    f"{line}\n  Green for {pull['age']} days and waiting on a decision."
+                )
+                interesting = True
             elif pull["age"] >= STALE_DAYS:
-                drifting.append(f"{line} — open {pull['age']} days")
+                drifting.append(f"{line} — open {pull['age']} days, checks {pull['checks']}")
                 interesting = True
 
         ci = report["ci"]
@@ -313,6 +329,7 @@ def render(reports: list[dict]) -> tuple[str, bool]:
     parts = [
         f"_Generated {NOW:%Y-%m-%d %H:%M} UTC._\n",
         section("Needs you this week", urgent),
+        section("Green and waiting on you", ready),
         section("Waiting on review", waiting),
         section("Quiet", [", ".join(quiet)] if quiet else []),
         section("Drifting", drifting),
@@ -329,7 +346,7 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             )
         )
 
-    return "\n".join(parts), bool(urgent)
+    return "\n".join(parts), bool(urgent or ready)
 
 
 def main() -> int:
