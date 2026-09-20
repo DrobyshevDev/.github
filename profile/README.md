@@ -23,7 +23,7 @@ Created and maintained by [**Denis Drobyshev**](https://github.com/DenisDrobyshe
 | [**glia**](https://github.com/DrobyshevDev/glia) | A glass-box, minimal library for building LLM agents | `pip install glia-agents` |
 | [**decisionrl**](https://github.com/DrobyshevDev/decisionrl) | Reinforcement learning for operational decisions | `pip install decisionrl` |
 | [**stadion**](https://github.com/DrobyshevDev/stadion) | A proving ground where an agent is scored against the exact optimum | `pip install stadion-rl` |
-| [**lemma**](https://github.com/DrobyshevDev/lemma) | A free course: the whole road into ML, DL and RL, from zero to reading and reproducing research | [начать](https://drobyshevdev.github.io/lemma/) |
+| [**lemma**](https://github.com/DrobyshevDev/lemma) | A free course: the whole road into ML, DL and RL, from zero to reading and reproducing research | [start reading](https://drobyshevdev.github.io/lemma/) |
 
 ### [praxis](https://github.com/DrobyshevDev/praxis) · a legal assistant you can check
 
@@ -152,9 +152,10 @@ a change of random seed or a comparison against a tuned baseline, and someone wh
 can train a model but cannot check a claim builds on noise. Module 1 is about
 baselines and confidence intervals, before any machine learning at all.
 
-Written in Russian; the notebooks run on a CPU in seconds and are executed in CI
-on Linux and Windows, because a reader whose notebook does not start has no
-course.
+Written in Russian and in English, both versions complete: twenty-seven modules
+each, behind the same notebooks. Those run on a CPU in seconds and are executed
+in CI on Linux and Windows, because a reader whose notebook does not start has
+no course.
 
 [**drobyshevdev.github.io/lemma**](https://drobyshevdev.github.io/lemma/) ·
 prose CC BY 4.0 · code MIT
