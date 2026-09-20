@@ -266,7 +266,7 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             elif pull["bot"]:
                 waiting.append(f"{line} — {pull['age']}d, checks {pull['checks']}")
                 interesting = True
-            elif pull["checks"] == "green" and not pull["draft"]:
+            elif pull["checks"] in ("green", "none") and not pull["draft"]:
                 # Green, not a draft, author is not a bot: everything that can be
                 # automated has happened and the only thing left is somebody
                 # deciding. That is the question this report asks, so it belongs
@@ -277,8 +277,13 @@ def render(reports: list[dict]) -> tuple[str, bool]:
                 # days, and this report called the repository quiet -- because red
                 # checks were the only thing that counted as needing you, and
                 # thirty days the only thing that counted as old.
+                # "none" means no check ever ran, which in a repository without
+                # CI is every pull request in it. .github#7 has been open and
+                # cleanly mergeable for forty-one days on exactly that basis, and
+                # calling it unchecked rather than green is the honest wording.
+                state = "Green" if pull["checks"] == "green" else "No checks ran, and mergeable,"
                 ready.append(
-                    f"{line}\n  Green for {pull['age']} days and waiting on a decision."
+                    f"{line}\n  {state} for {pull['age']} days and waiting on a decision."
                 )
                 interesting = True
             elif pull["age"] >= STALE_DAYS:
