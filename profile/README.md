@@ -36,11 +36,20 @@ cannot hallucinate; an optional LLM layer passes the same check.
 
 Six codes ship in the repository — civil, tax, labour, criminal, housing and
 administrative offences, the civil one running to 1,712 articles and 4,717
-provisions — together with a cross-reference graph between articles. The texts
-are transcriptions from Wikisource, marked in the corpus as pending a check
-against the official publication at pravo.gov.ru; the parser for that source is
-how an edition gets confirmed rather than how a code gets added.
-Judicial practice is the next pipeline rather than something already shipped.
+provisions — with the Consumer Protection Act beside them and a cross-reference
+graph between articles. The texts are transcriptions from Wikisource, marked in
+the corpus as pending a check against the official publication at pravo.gov.ru;
+the parser for that source is how an edition gets confirmed rather than how a
+code gets added.
+
+Judicial practice ships as 148 paragraphs of Supreme Court Plenum rulings,
+indexed against the articles they construe, so a norm points at the paragraph
+that interprets it rather than at a ruling as a whole. That set is what
+Wikisource carries and no more. Mass case law is the part that is still a
+pipeline rather than a feature: there is no open structured corpus for Russia at
+the level of Caselaw Access, and kad.arbitr and ГАС «Правосудие» give data up
+grudgingly.
+
 Retrieval quality is measured by an eval on an eighteen-question golden set. The
 offline figures are pinned by a test that re-runs it; recall@5 0.92 and MRR 0.94
 on the full corpus are measured on a GPU that CI does not have, and are stated
