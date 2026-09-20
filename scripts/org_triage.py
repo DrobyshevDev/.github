@@ -23,6 +23,8 @@ import json
 import re
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 
 ORG = "DrobyshevDev"
 
@@ -43,6 +45,10 @@ REPOS = {
 
 STALE_DAYS = 30
 NOW = dt.datetime.now(dt.timezone.utc)
+
+#: Codecov's public API. No token: this asks only what a visitor of the badge
+#: would see, which is exactly the question.
+CODECOV = "https://api.codecov.io/api/v2/github/{org}/repos/{repo}/"
 
 
 def gh(*args: str) -> object | None:
@@ -97,7 +103,7 @@ def collect(repo: str, branch: str) -> dict:
     full = f"{ORG}/{repo}"
     report: dict = {
         "repo": repo, "unread": False, "pulls": [], "stale_issues": [],
-        "ci": None, "unpinned": [],
+        "ci": None, "unpinned": [], "coverage": "",
     }
 
     pulls = gh(
@@ -177,6 +183,7 @@ def collect(repo: str, branch: str) -> dict:
         report["ci"] = runs[0]
 
     report["unpinned"] = unpinned_actions(full)
+    report["coverage"] = coverage_badge(full, repo)
 
     return report
 
@@ -240,6 +247,71 @@ def unpinned_actions(full: str) -> list[str] | None:
     return loose
 
 
+def _fetch(url: str) -> str | None:
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": "drobyshevdev-triage"})
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.read().decode("utf-8")
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError):
+        return None
+
+
+def coverage_badge(full: str, repo: str) -> str | None:
+    """Whether the coverage badge a repository publishes has anything behind it.
+
+    A badge is a claim, and this one can be empty without anything going red.
+    The upload step runs with `fail_ci_if_error: false` -- correct, because a
+    Codecov outage is not a reason to fail somebody's pull request -- so a
+    rejected upload leaves the job green, and the only trace is a line in a log
+    nobody opens. Meanwhile the badge renders "unknown" to every visitor of the
+    README.
+
+    That is how four repositories came to publish an "unknown" coverage badge
+    while their coverage jobs were green: Codecov answered
+    `Token required - not valid tokenless upload` and the run carried on.
+
+    Asks Codecov the same question a visitor's browser asks, with no token.
+
+    Returns None when something could not be read -- unknown rather than fine --
+    "" when the repository makes no claim, "ok N%" when the claim has a figure
+    behind it, and "empty" when the badge is published and Codecov has nothing.
+    """
+    listing = _retry(lambda: gh("api", f"repos/{full}/contents"), list)
+    if listing is None:
+        return None
+    readmes = [
+        entry.get("name")
+        for entry in listing
+        if isinstance(entry, dict) and str(entry.get("name", "")).startswith("README")
+    ]
+
+    claimed = False
+    for name in readmes:
+        body = _retry(
+            lambda name=name: gh_text(
+                "api", f"repos/{full}/contents/{name}",
+                "-H", "Accept: application/vnd.github.raw",
+            ),
+            str,
+        )
+        if body is None:
+            return None
+        if f"codecov.io/gh/{ORG}/{repo}" in body:
+            claimed = True
+    if not claimed:
+        return ""
+
+    body = _fetch(CODECOV.format(org=ORG, repo=repo))
+    if body is None:
+        return None
+    try:
+        totals = json.loads(body).get("totals") or {}
+    except json.JSONDecodeError:
+        return None
+    coverage = totals.get("coverage")
+    return f"ok {float(coverage):.1f}%" if coverage is not None else "empty"
+
+
 def render(reports: list[dict]) -> tuple[str, bool]:
     """The report, and whether anything in it needs a decision."""
     urgent: list[str] = []
@@ -297,6 +369,30 @@ def render(reports: list[dict]) -> tuple[str, bool]:
             urgent.append(
                 f"[{repo}]({ci['url']}) — {ci['workflowName']} is "
                 f"{ci['conclusion']} on the default branch."
+            )
+            interesting = True
+
+        coverage = report["coverage"]
+        if coverage is None:
+            drifting.append(
+                f"{repo} — could not check its coverage badge, so whether anything "
+                "is behind it is unknown rather than fine."
+            )
+            interesting = True
+        elif coverage == "empty":
+            # Urgent, not drifting: this one is on the README right now, being
+            # read by anyone deciding whether to trust the project, and it says
+            # nothing at all. The job that should have filled it is green.
+            urgent.append(
+                f"{repo} — publishes a coverage badge and Codecov has no coverage for it, "
+                "so the badge renders \"unknown\" to every visitor while the job that "
+                "should have filled it is green. Codecov rejects the upload "
+                "(`Token required - not valid tokenless upload`) and the step is not "
+                "allowed to fail on an outage, so nothing turns red. decisionrl uploads "
+                "fine, and no repository here has a secret of its own, so the likely "
+                "difference is an organisation `CODECOV_TOKEN` not shared with this "
+                "repository, or the repository never activated on Codecov — both need "
+                "a login to tell apart."
             )
             interesting = True
 
